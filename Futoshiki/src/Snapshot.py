@@ -52,13 +52,13 @@ class Snapshot:
         return column
     
     def unsolved_cells(self):
-        unsolved = [0]
+        unsolved = []
         for row in range(5):
             for column in range(5):
                 if self.cells[row][column].get_value() == 0:
                     unsolved.append(self.cells[row][column])
-        self.heapify(unsolved)
-        return unsolved
+        return_sorted = self.sort(unsolved)
+        return return_sorted
 
     def solved_cells(self):
         solved = []
@@ -109,25 +109,36 @@ class Snapshot:
                     except ValueError:
                         pass
 
-    def heapify(self, a_list):
-        list_length = len(a_list) - 1
-        for j in range(list_length // 2, 0, -1):
-            self.siftdown(a_list, j, list_length)
+    def sort(self, list_of_cells):
+        less = []
+        equal = []
+        greater = []
 
-    def siftdown(self, list_for_sorting, index, list_length):
-        temp = list_for_sorting[index]
-        # check if there is a child by multiplying the index by 2 and checking if it is less than the last index
-        while 2 * index <= list_length:
-            child = 2 * index
-            # check if there is a right child and if it is bigger than the left child
-            if (child < list_length) and (len(list_for_sorting[child + 1].possible_values) <
-                                          len(list_for_sorting[child].possible_values)):
-                child = child + 1
-            # if the child is higher than the original if so put the child in the position of the original
-            if len(list_for_sorting[child].possible_values) < len(temp.possible_values):
-                list_for_sorting[index] = list_for_sorting[child]
-            else:
-                break  # exit while loop if it not higher
-            index = child
-        # insert original list[index] in correct spot
-        list_for_sorting[index] = temp
+        if len(list_of_cells) > 1:
+            pivot = len(list_of_cells[0].possible_values)
+            for cell in list_of_cells:
+                if len(cell.possible_values) < pivot:
+                    less.append(cell)
+                if len(cell.possible_values) == pivot:
+                    equal.append(cell)
+                if len(cell.possible_values) > pivot:
+                    greater.append(cell)
+
+            return_list = []
+            try:
+                return_list.extend(sorted(less, key=lambda cell: (len(cell.possible_values))))
+            except TypeError:
+                pass
+
+            try:
+                return_list.extend(equal)
+            except TypeError:
+                pass
+
+            try:
+                return_list.extend(sorted(greater, key=lambda cell: (len(cell.possible_values))))
+            except TypeError:
+                pass
+            return return_list
+        else:
+            return list_of_cells

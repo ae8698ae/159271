@@ -9,7 +9,7 @@ import pygame, Snapshot, Cell, Futoshiki_IO
 
 def solve(snapshot, screen):
     # display current snapshot
-    pygame.time.delay(200)
+    pygame.time.delay(10)
     Futoshiki_IO.display_puzzle(snapshot, screen)
     pygame.display.flip()
 
@@ -25,11 +25,12 @@ def solve(snapshot, screen):
         for solved_cell in new_snapshot.solved_cells():
             new_snapshot.remove_invalids_from_possible_list(solved_cell)
 
-        for unsolved_cell in new_snapshot.unsolved_cells()[1:]:
-
+        for unsolved_cell in new_snapshot.unsolved_cells():
             next_empty_cell_row = unsolved_cell.get_row()
-
             next_empty_cell_column = unsolved_cell.get_column()
+
+            if len(unsolved_cell.possible_values) == 1:
+                new_snapshot.set_cell_value(next_empty_cell_row, next_empty_cell_column, unsolved_cell.possible_values[0])
 
             for cell_value in new_snapshot.get_cell_possibles_list(next_empty_cell_row, next_empty_cell_column):
 
@@ -56,7 +57,7 @@ def check_consistency(snapshot, row_for_checking, column_for_checking, value_to_
 
      
 def is_complete(snapshot):
-    if len(snapshot.unsolved_cells()) == 1:
+    if len(snapshot.unsolved_cells()) == 0:
         return True
     else:
         return False
