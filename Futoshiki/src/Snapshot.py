@@ -79,15 +79,16 @@ class Snapshot:
 
     def remove_invalids_from_possible_list(self, cell):
         value_to_remove = cell.get_value()
-        cell_coordinates = (cell.get_row(), cell.get_column())
-        for row_cell in self.cells_by_row(cell_coordinates[0]):
-            if row_cell.get_value() != value_to_remove:
+        cell_row = cell.get_row()
+        cell_column = cell.get_column()
+        for row_cell in self.cells_by_row(cell_row):
+            if row_cell.get_column() != cell_column:
                 try:
                     row_cell.possible_values.remove(value_to_remove)
                 except ValueError:
                     pass
-        for column_cell in self.cells_by_column(cell_coordinates[1]):
-            if column_cell.get_value != value_to_remove:
+        for column_cell in self.cells_by_column(cell_column):
+            if column_cell.get_row() != cell_row:
                 try:
                     column_cell.possible_values.remove(value_to_remove)
                 except ValueError:
@@ -149,7 +150,6 @@ class Snapshot:
                         self.cells[greater[0]][greater[1]].possible_values.remove(value_to_remove_greater)
                     except ValueError:
                         pass
-                print(self.cells[greater[0]][greater[1]].possible_values)
             else:
                 try:
                     self.cells[greater[0]][greater[1]].possible_values.remove(1)

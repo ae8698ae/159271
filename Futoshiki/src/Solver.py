@@ -24,33 +24,29 @@ def solve(snapshot, screen):
     else:
         new_snapshot = snapshot.clone()
 
-        for solved_cell in new_snapshot.solved_cells():
-            new_snapshot.remove_invalids_from_possible_list(solved_cell)
+        for solved_cell in snapshot.solved_cells():
+            snapshot.remove_invalids_from_possible_list(solved_cell)
 
-        new_snapshot.remove_constraints()
+        snapshot.remove_constraints()
 
         list_of_lengths = []
-        for unsolved_cell in new_snapshot.unsolved_cells():
+        for unsolved_cell in snapshot.unsolved_cells():
             list_of_lengths.append(len(unsolved_cell.possible_values))
         print(list_of_lengths)
 
-        for unsolved_cell in new_snapshot.unsolved_cells():
+        for unsolved_cell in snapshot.unsolved_cells():
             next_empty_cell_row = unsolved_cell.get_row()
             next_empty_cell_column = unsolved_cell.get_column()
 
-            if len(unsolved_cell.possible_values) == 1:
-                new_snapshot.set_cell_value(next_empty_cell_row, next_empty_cell_column, unsolved_cell.possible_values[0])
+            for cell_value in new_snapshot.get_cell_possibles_list(next_empty_cell_row, next_empty_cell_column):
 
-            else:
-                for cell_value in new_snapshot.get_cell_possibles_list(next_empty_cell_row, next_empty_cell_column):
+                if check_consistency_cell(new_snapshot, next_empty_cell_row, next_empty_cell_column, cell_value):
+                    new_snapshot.set_cell_value(next_empty_cell_row, next_empty_cell_column, cell_value)
 
-                    if check_consistency_cell(new_snapshot, next_empty_cell_row, next_empty_cell_column, cell_value):
-                        new_snapshot.set_cell_value(next_empty_cell_row, next_empty_cell_column, cell_value)
+                    if solve(new_snapshot, screen):
+                        return True
 
-                        if solve(new_snapshot, screen):
-                            return True
-
-                return False
+            return False
 
 
 def check_consistency(snapshot):
