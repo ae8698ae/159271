@@ -25,14 +25,11 @@ class Snapshot:
     def get_cell_value(self, row, column):
         return self.cells[row][column].get_value()
 
-    def set_cell_constraint(self, row, column, greater_or_less_than, cell):
-        self.cells[row][column].constraints.append([greater_or_less_than, cell])
-
     def get_cell_possibles_list(self, row, column):
         return self.cells[row][column].possible_values
 
-    def set_constraint(self, coords):
-        self.constraints.append(coords)
+    def set_constraint(self, coordinates):
+        self.constraints.append(coordinates)
     
     def get_constraints(self):
         constraints = []  
@@ -50,7 +47,8 @@ class Snapshot:
         for row in range(5):
             column.append(self.cells[row][col])
         return column
-    
+
+    # modified unsolved cells function that also sorts the list with the fewest possibilities first before returning
     def unsolved_cells(self):
         unsolved = []
         for row in range(5):
@@ -77,7 +75,8 @@ class Snapshot:
             clone.set_constraint(c)
         return clone
 
-    def remove_invalids_from_possible_list(self, cell):
+    # function that
+    def remove_used_value_from_possible_list(self, cell):
         value_to_remove = cell.get_value()
         cell_row = cell.get_row()
         cell_column = cell.get_column()
@@ -94,51 +93,7 @@ class Snapshot:
                 except ValueError:
                     pass
 
-        # for constraint in self.get_constraints():
-        #     if cell_coordinates == constraint[0]:
-        #         for i_to_remove in range(1, value_to_remove + 1):
-        #             try:
-        #                 self.cells[constraint[1][0]][constraint[1][1]].possible_values.remove(i_to_remove)
-        #             except ValueError:
-        #                 pass
-        #     if cell_coordinates == constraint[1]:
-        #         for i_to_remove in range(value_to_remove, 6):
-        #             try:
-        #                 self.cells[constraint[0][0]][constraint[0][1]].possible_values.remove(i_to_remove)
-        #             except ValueError:
-        #                 pass
-
-    def sort(self, list_of_cells):
-        less = []
-        equal = []
-        greater = []
-        if len(list_of_cells) > 1:
-            pivot = len(list_of_cells[0].possible_values)
-            for cell in list_of_cells:
-                if len(cell.possible_values) < pivot:
-                    less.append(cell)
-                if len(cell.possible_values) == pivot:
-                    equal.append(cell)
-                if len(cell.possible_values) > pivot:
-                    greater.append(cell)
-            return_list = []
-            try:
-                return_list.extend(sorted(less, key=lambda cell: (len(cell.possible_values))))
-            except TypeError:
-                pass
-            try:
-                return_list.extend(equal)
-            except TypeError:
-                pass
-            try:
-                return_list.extend(sorted(greater, key=lambda cell: (len(cell.possible_values))))
-            except TypeError:
-                pass
-            return return_list
-        else:
-            return list_of_cells
-
-    def remove_constraints (self):
+    def remove_constraints(self):
         for constraints in self.get_constraints():
             lesser = constraints[0]
             lesser_value = self.cells[lesser[0]][lesser[1]].get_value()

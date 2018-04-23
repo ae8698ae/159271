@@ -8,7 +8,6 @@ class Cell:
         self.column = column
         self.value = value
         self.possible_values = [1, 2, 3, 4, 5]
-        self.constraints = []
         
     def get_row(self):
         return self.row

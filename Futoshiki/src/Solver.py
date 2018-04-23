@@ -13,6 +13,7 @@ def solve(snapshot, screen):
     Futoshiki_IO.display_puzzle(snapshot, screen)
     pygame.display.flip()
 
+    # check if the puzzle is complete
     if is_complete(snapshot):
         if check_consistency(snapshot):
             print("returned true")
@@ -29,24 +30,21 @@ def solve(snapshot, screen):
 
         new_snapshot.remove_constraints()
 
-        list_of_lengths = []
-        for unsolved_cell in snapshot.unsolved_cells():
-            list_of_lengths.append(len(unsolved_cell.possible_values))
-        print(list_of_lengths)
+        # check each cell in the list of unsolved cells
+        for unsolved_cell in new_snapshot.unsolved_cells():
+            unsolved_cell_row = unsolved_cell.get_row()
+            unsolved_cell_column = unsolved_cell.get_column()
 
-        for unsolved_cell in snapshot.unsolved_cells():
-            next_empty_cell_row = unsolved_cell.get_row()
-            next_empty_cell_column = unsolved_cell.get_column()
-
-            for cell_value in new_snapshot.get_cell_possibles_list(next_empty_cell_row, next_empty_cell_column):
-
-                if check_consistency_cell(new_snapshot, next_empty_cell_row, next_empty_cell_column, cell_value):
-                    new_snapshot.set_cell_value(next_empty_cell_row, next_empty_cell_column, cell_value)
-
+            # check each possible value if it is valid for the unsolved cell
+            for cell_value in unsolved_cell.get_possible_values():
+                # if the consistency is true then set the cell value and do a recursive call
+                if check_consistency(new_snapshot, unsolved_cell_row, unsolved_cell_column, cell_value):
+                    new_snapshot.set_cell_value(unsolved_cell_row, unsolved_cell_column, cell_value)
                     if solve(new_snapshot, screen):
                         return True
-
+            # return False if we have reached here as there is no possible solution for this tree
             return False
+
 
 
 def check_consistency(snapshot):
@@ -74,8 +72,21 @@ def check_consistency_cell(snapshot, row_for_checking, column_for_checking, valu
     for column_cell in snapshot.cells_by_column(column_for_checking):
         if column_cell.get_value() == value_to_test:
             return False
+
+    cell_for_checking = (row_for_checking, column_for_checking)
+    for constraint in snapshot.get_constraints():
+        if cell_for_checking in constraint:
+            if cell_for_checking == constraint[0]:
+                if snapshot.get_cell_value(constraint[1][0], constraint[1][1]) != 0:
+                    if value_to_test > snapshot.get_cell_value(constraint[1][0], constraint[1][1]):
+                        return False
+            elif cell_for_checking == constraint[1]:
+                if snapshot.get_cell_value(constraint[0][0], constraint[0][1]) != 0:
+                    if value_to_test < snapshot.get_cell_value(constraint[0][0], constraint[0][1]):
+                        return False
+
     return True
 
-     
+
 def is_complete(snapshot):
     return snapshot.unsolved_cells() == []
