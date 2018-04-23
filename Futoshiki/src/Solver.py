@@ -69,10 +69,12 @@ def check_consistency_cell(snapshot, row_for_checking, column_for_checking, valu
         if row_cell.get_value() == value_to_test:
             return False
 
+    # check that the cell value is not the same as any other cell in the column return false if there is
     for column_cell in snapshot.cells_by_column(column_for_checking):
         if column_cell.get_value() == value_to_test:
             return False
 
+    # check that the value conforms with the constraints return false if it doesn't
     cell_for_checking = (row_for_checking, column_for_checking)
     for constraint in snapshot.get_constraints():
         if cell_for_checking in constraint:
@@ -85,8 +87,10 @@ def check_consistency_cell(snapshot, row_for_checking, column_for_checking, valu
                     if value_to_test < snapshot.get_cell_value(constraint[0][0], constraint[0][1]):
                         return False
 
+    # return true if it passes all the tests
     return True
 
 
+# function that returns true if the puzzle is complete
 def is_complete(snapshot):
     return snapshot.unsolved_cells() == []

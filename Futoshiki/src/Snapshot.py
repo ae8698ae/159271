@@ -75,17 +75,21 @@ class Snapshot:
             clone.set_constraint(c)
         return clone
 
-    # function that
+    # function that removes the cell value from the possibilities list of the other cells in the row and column
     def remove_used_value_from_possible_list(self, cell):
         value_to_remove = cell.get_value()
         cell_row = cell.get_row()
         cell_column = cell.get_column()
+
+        # remove the cell value from the possibilities list of the other cells in the row
         for row_cell in self.cells_by_row(cell_row):
             if row_cell.get_column() != cell_column:
                 try:
                     row_cell.possible_values.remove(value_to_remove)
                 except ValueError:
                     pass
+
+        # remove the cell value from the possibilities list of the other cells in the column
         for column_cell in self.cells_by_column(cell_column):
             if column_cell.get_row() != cell_row:
                 try:
@@ -93,29 +97,40 @@ class Snapshot:
                 except ValueError:
                     pass
 
+    # function that remove values from the possibilities list based on the constraints
     def remove_constraints(self):
         for constraints in self.get_constraints():
             lesser = constraints[0]
             lesser_value = self.cells[lesser[0]][lesser[1]].get_value()
             greater = constraints[1]
             greater_value = self.cells[greater[0]][greater[1]].get_value()
+
+            # if the lesser constraint value is not 0 then remove all the possible values from the greater cell from 1
+            # to the value of the lesser cell
             if lesser_value != 0:
                 for value_to_remove_greater in range(1, lesser_value + 1):
                     try:
                         self.cells[greater[0]][greater[1]].possible_values.remove(value_to_remove_greater)
                     except ValueError:
                         pass
+
+            # if the lesser cell is 0 then remove 1 because 1 is the lowest and can't be greater than any other value
             else:
                 try:
                     self.cells[greater[0]][greater[1]].possible_values.remove(1)
                 except ValueError:
                     pass
+
+            # if the greater constraint value is not 0 then remove all the possible values from the greater cell from 1
+            # to the value of the lesser cell
             if greater_value != 0:
                 for value_to_remove_lesser in range(greater_value, 6):
                     try:
                         self.cells[lesser[0]][lesser[1]].possible_values.remove(value_to_remove_lesser)
                     except ValueError:
                         pass
+
+            # if the greater cell is 0 then remove 5 because 5 is the highest and can't be lower than any other value
             else:
                 try:
                     self.cells[lesser[0]][lesser[1]].possible_values.remove(5)
