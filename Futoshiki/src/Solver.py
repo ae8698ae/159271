@@ -9,7 +9,7 @@ import pygame, Snapshot, Cell, Futoshiki_IO
 
 def solve(snapshot, screen):
     # display current snapshot
-    # pygame.time.delay(200)
+    pygame.time.delay(200)
     Futoshiki_IO.display_puzzle(snapshot, screen)
     pygame.display.flip()
 
@@ -27,7 +27,7 @@ def solve(snapshot, screen):
         for solved_cell in snapshot.solved_cells():
             snapshot.remove_invalids_from_possible_list(solved_cell)
 
-        snapshot.remove_constraints()
+        new_snapshot.remove_constraints()
 
         list_of_lengths = []
         for unsolved_cell in snapshot.unsolved_cells():

@@ -34,3 +34,6 @@ class Cell:
     def get_possible_values(self):
         return self.possible_values
 
+    def remove_from_possible(self, value):
+        self.possible_values.remove(value)
+
