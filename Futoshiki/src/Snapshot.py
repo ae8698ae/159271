@@ -80,40 +80,37 @@ class Snapshot:
     def remove_invalids_from_possible_list(self, cell):
         value_to_remove = cell.get_value()
         cell_coordinates = (cell.get_row(), cell.get_column())
-
         for row_cell in self.cells_by_row(cell_coordinates[0]):
-            if row_cell != cell:
+            if row_cell.get_value() != value_to_remove:
                 try:
                     row_cell.possible_values.remove(value_to_remove)
                 except ValueError:
                     pass
-
         for column_cell in self.cells_by_column(cell_coordinates[1]):
-            if column_cell != cell:
+            if column_cell.get_value != value_to_remove:
                 try:
                     column_cell.possible_values.remove(value_to_remove)
                 except ValueError:
                     pass
 
-        for constraint in self.get_constraints():
-            if cell_coordinates == constraint[0]:
-                for i_to_remove in range(1, value_to_remove + 1):
-                    try:
-                        self.cells[constraint[1][0]][constraint[1][1]].possible_values.remove(i_to_remove)
-                    except ValueError:
-                        pass
-            if cell_coordinates == constraint[1]:
-                for i_to_remove in range(value_to_remove, 6):
-                    try:
-                        self.cells[constraint[0][0]][constraint[0][1]].possible_values.remove(i_to_remove)
-                    except ValueError:
-                        pass
+        # for constraint in self.get_constraints():
+        #     if cell_coordinates == constraint[0]:
+        #         for i_to_remove in range(1, value_to_remove + 1):
+        #             try:
+        #                 self.cells[constraint[1][0]][constraint[1][1]].possible_values.remove(i_to_remove)
+        #             except ValueError:
+        #                 pass
+        #     if cell_coordinates == constraint[1]:
+        #         for i_to_remove in range(value_to_remove, 6):
+        #             try:
+        #                 self.cells[constraint[0][0]][constraint[0][1]].possible_values.remove(i_to_remove)
+        #             except ValueError:
+        #                 pass
 
     def sort(self, list_of_cells):
         less = []
         equal = []
         greater = []
-
         if len(list_of_cells) > 1:
             pivot = len(list_of_cells[0].possible_values)
             for cell in list_of_cells:
@@ -123,18 +120,15 @@ class Snapshot:
                     equal.append(cell)
                 if len(cell.possible_values) > pivot:
                     greater.append(cell)
-
             return_list = []
             try:
                 return_list.extend(sorted(less, key=lambda cell: (len(cell.possible_values))))
             except TypeError:
                 pass
-
             try:
                 return_list.extend(equal)
             except TypeError:
                 pass
-
             try:
                 return_list.extend(sorted(greater, key=lambda cell: (len(cell.possible_values))))
             except TypeError:
@@ -142,3 +136,33 @@ class Snapshot:
             return return_list
         else:
             return list_of_cells
+
+    def remove_constraints (self):
+        for constraints in self.get_constraints():
+            lesser = constraints[0]
+            lesser_value = self.cells[lesser[0]][lesser[1]].get_value()
+            greater = constraints[1]
+            greater_value = self.cells[greater[0]][greater[1]].get_value()
+            if lesser_value != 0:
+                for value_to_remove_greater in range(1, lesser_value + 1):
+                    try:
+                        self.cells[greater[0]][greater[1]].possible_values.remove(value_to_remove_greater)
+                    except ValueError:
+                        pass
+                print(self.cells[greater[0]][greater[1]].possible_values)
+            else:
+                try:
+                    self.cells[greater[0]][greater[1]].possible_values.remove(1)
+                except ValueError:
+                    pass
+            if greater_value != 0:
+                for value_to_remove_lesser in range(greater_value, 6):
+                    try:
+                        self.cells[lesser[0]][lesser[1]].possible_values.remove(value_to_remove_lesser)
+                    except ValueError:
+                        pass
+            else:
+                try:
+                    self.cells[lesser[0]][lesser[1]].possible_values.remove(5)
+                except ValueError:
+                    pass

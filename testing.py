@@ -1,4 +1,2 @@
-l = [1, 2, 3, 4]
-print(l)
-l = [10, 12, 13, 14]
-print(l)
+for i in range(1, 5):
+    print(i)
