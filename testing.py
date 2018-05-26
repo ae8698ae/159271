@@ -1,2 +1,5 @@
-for i in range(1, 5):
-    print(i)
+a = (4, 5)
+b = (5, 3)
+
+print(a <  b)
+
